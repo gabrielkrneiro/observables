@@ -1,10 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  Input,
-  Renderer2,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -20,16 +14,20 @@ class HeightAndWidth {
   selector: '[autoScroll]',
 })
 export class AutoScrollDirective {
-  @Input('autoScroll') wrappedElement: ElementRef<HTMLFormElement>;
-
   public height: number = 0;
   public width: number = 0;
 
   private subscription: Subscription;
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
+  onResize() {
     this.doDivHeightChange(this.getHeightAndWidthObject());
+  }
+
+  constructor(
+    private wrappedElement: ElementRef<HTMLFormElement> // private renderer: Renderer2
+  ) {
+    // renderer.setStyle(wrappedElement.nativeElement, 'backgroundColor', 'gray');
   }
 
   ngAfterViewInit() {
@@ -41,14 +39,14 @@ export class AutoScrollDirective {
     this.subscription.unsubscribe();
   }
 
-  getHeightAndWidthObject(): HeightAndWidth {
+  private getHeightAndWidthObject(): HeightAndWidth {
     const { offsetHeight: currentHeight, offsetWidth: currentWidth } =
       this.wrappedElement.nativeElement;
     const newValues = new HeightAndWidth(currentHeight, currentWidth);
     return newValues;
   }
 
-  setupHeightMutationObserver() {
+  private setupHeightMutationObserver() {
     const observerable$ = new Observable<HeightAndWidth>((observer) => {
       const elementObserver = new MutationObserver(() => {
         observer.next(this.getHeightAndWidthObject());
@@ -68,8 +66,10 @@ export class AutoScrollDirective {
       });
   }
 
-  public doDivHeightChange(newValues: HeightAndWidth) {
-    const main = document.querySelector('.section__form');
+  private doDivHeightChange(newValues: HeightAndWidth) {
+    // necessary make it more generally
+    // const main = document.querySelector('.section__form');
+    const main = this.wrappedElement.nativeElement.parentElement;
     if (main) {
       main.scrollTop = main.clientHeight;
     }
