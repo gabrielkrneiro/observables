@@ -1,0 +1,22 @@
+:host .section__form {
+  overflow-x: scroll;
+  border: 1px solid black;
+  width: 500px;
+  height: 200px;
+}
+
+:host .form {
+  .form-group {
+    border: 1px solid red;
+    display: flex;
+    justify-content: space-around;
+
+    label {
+      text-align: start;
+    }
+
+    .form-group__control {
+      height: 30px;
+    }
+  }
+}
